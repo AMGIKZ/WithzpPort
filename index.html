@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>วิชญ์พล ผลสุทธิ์ — Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="nav-item active" onclick="showPage('profile')">Profile</div>
+        <div class="nav-dot"></div>
+        <div class="nav-item" onclick="showPage('achievement')">Achievement</div>
+        <div class="nav-dot"></div>
+        <div class="nav-item" onclick="showPage('project')">Project</div>
+        <div class="nav-dot"></div>
+        <div class="nav-item" onclick="showPage('activity')">Activity</div>
+        <div class="nav-dot"></div>
+        <div class="nav-item" onclick="showPage('contact')">Contact</div>
+    </nav>
+    <!-- Admin Gear -->
+    <div id="admin-gear" onclick="openAdminModal()" title="Admin">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15a3 3 0 100-6 3 3 0 000 6zm8.94-1.5a7 7 0 00.06-1.5 7 7 0 00-.06-1.5l2.16-1.68a.5.5 0 00.12-.64l-2.04-3.54a.5.5 0 00-.61-.22l-2.55 1.02a7.14 7.14 0 00-1.3-.75l-.39-2.71A.49.49 0 0015.84 1h-4.08a.49.49 0 00-.49.43l-.39 2.71a7 7 0 00-1.3.75L7.03 3.87a.49.49 0 00-.62.22L4.37 7.63a.48.48 0 00.12.64L6.65 9.95a7.13 7.13 0 000 3L4.49 14.63a.48.48 0 00-.12.64l2.04 3.54c.12.22.39.3.61.22l2.55-1.02c.41.28.84.52 1.3.75l.39 2.71c.06.25.28.43.49.43h4.08c.25 0 .46-.18.49-.43l.39-2.71c.46-.23.9-.47 1.3-.75l2.55 1.02c.23.09.49 0 .62-.22l2.04-3.54a.48.48 0 00-.12-.64l-2.16-1.68z" />
+        </svg>
+    </div>
+    <!-- Admin Modal Overlay -->
+    <div class="modal-overlay" id="admin-modal-overlay" onclick="closeAdminOverlay(event)">
+        <!-- Login Box -->
+        <div class="modal-box" id="admin-login-box">
+            <div class="modal-close" onclick="closeModal()">✕</div>
+            <div class="modal-title">🔐 Admin Access</div>
+            <p style="font-size:0.85rem;color:var(--white-dim);margin-bottom:16px;">กรอก Admin Key เพื่อเข้าแก้ไขข้อมูล</p>
+            <input type="password" class="modal-input" id="admin-key-input" placeholder="Admin Key..." onkeydown="if(event.key==='Enter')verifyAdmin()">
+            <p class="modal-error" id="admin-error">❌ Admin Key ไม่ถูกต้อง</p>
+            <button class="modal-btn" onclick="verifyAdmin()">เข้าสู่ระบบ</button>
+        </div>
+        <!-- Admin Panel -->
+        <div id="admin-panel">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                <h2 style="font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:600;background:linear-gradient(90deg,var(--blue-bright),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">⚙️ Admin Panel</h2>
+                <div class="modal-close" style="position:static" onclick="closeModal()">✕</div>
+            </div>
+            <div class="admin-tabs">
+                <div class="admin-tab active" onclick="switchAdminTab('profile')">Profile</div>
+                <div class="admin-tab" onclick="switchAdminTab('achievement')">Achievement</div>
+                <div class="admin-tab" onclick="switchAdminTab('project')">Project</div>
+                <div class="admin-tab" onclick="switchAdminTab('activity')">Activity</div>
+                <div class="admin-tab" onclick="switchAdminTab('contact')">Contact</div>
+            </div>
+            <!-- Profile Tab -->
+            <div class="admin-pane active" id="admin-tab-profile">
+                <div class="admin-section">
+                    <h3>ข้อมูลส่วนตัว</h3>
+                    <div class="admin-grid-2">
+                        <div class="admin-field"><label>คำทักทาย (Hero Greeting)</label><input id="ap-greeting" value="ยินดีต้อนรับสู่ Portfolio ของ"></div>
+                        <div class="admin-field"><label>Quote / คำคม</label><input id="ap-quote" value="'เทคโนโลยีไม่ใช่แค่เครื่องมือ แต่คือสะพานเชื่อมต่อโลกให้ดีขึ้น'"></div>
+                    </div>
+                    <div class="admin-field"><label>ความฝัน / จุดมุ่งหมาย</label><input id="ap-dream" value="มุ่งสู่การพัฒนาเทคโนโลยีที่เป็นประโยชน์ต่อผู้คน"></div>
+                    <div class="admin-field"><label>URL รูปโปรไฟล์</label><input id="ap-photo" placeholder="https://..."></div>
+                    <button class="admin-save-btn" onclick="saveProfile()">💾 บันทึก Profile</button>
+                </div>
+                <div class="admin-section">
+                    <h3>Creators ที่ชอบ</h3>
+                    <div id="creator-list" class="admin-item-list"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
+                        <div class="admin-field" style="margin:0"><input id="nc-name" placeholder="ชื่อช่อง"></div>
+                        <div class="admin-field" style="margin:0"><input id="nc-url" placeholder="URL รูป Profile"></div>
+                        <button class="admin-add-btn" onclick="addCreator()">+เพิ่ม</button>
+                    </div>
+                </div>
+                <div class="admin-section">
+                    <h3>Skills</h3>
+                    <div id="skill-list" class="admin-item-list"></div>
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                        <div class="admin-field" style="flex:1;margin:0"><input id="new-skill" placeholder="ชื่อ Skill เช่น Python, Blender..."></div>
+                        <button class="admin-add-btn" onclick="addSkill()">+เพิ่ม</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Achievement Tab -->
+            <div class="admin-pane" id="admin-tab-achievement">
+                <div class="admin-section">
+                    <h3>เพิ่ม Category</h3>
+                    <div style="display:flex;gap:8px;">
+                        <div class="admin-field" style="flex:1;margin:0"><input id="new-cat" placeholder="ชื่อ Category เช่น Competition"></div>
+                        <button class="admin-add-btn" onclick="addCategory()">+เพิ่ม</button>
+                    </div>
+                    <div id="cat-list" class="admin-item-list" style="margin-top:10px;"></div>
+                </div>
+                <div class="admin-section">
+                    <h3>เพิ่ม Achievement</h3>
+                    <div class="admin-grid-2">
+                        <div class="admin-field"><label>ชื่อรายการ</label><input id="na-title" placeholder="ชื่อรายการ"></div>
+                        <div class="admin-field"><label>ชื่อผลงาน</label><input id="na-work" placeholder="ชื่อผลงาน"></div>
+                        <div class="admin-field"><label>Category</label><select id="na-cat"></select></div>
+                        <div class="admin-field"><label>รางวัลที่ได้</label><select id="na-award"><option value="gold">🥇 Gold / ที่ 1</option><option value="silver">🥈 Silver / ที่ 2</option><option value="bronze">🥉 Bronze / ที่ 3</option><option value="special">⭐ Special Award</option><option value="participate">🎖️ เข้าร่วม</option></select></div>
+                        <div class="admin-field"><label>เจ้าภาพ</label><input id="na-host" placeholder="ชื่อเจ้าภาพ"></div>
+                        <div class="admin-field"><label>URL รูปหลัก</label><input id="na-img" placeholder="https://..."></div>
+                    </div>
+                    <div class="admin-field"><label>รายละเอียด</label><textarea id="na-desc" rows="3" placeholder="รายละเอียดเต็ม..."></textarea></div>
+                    <div class="admin-field"><label>URL รูปรอง (คั่นด้วย, )</label><input id="na-imgs2" placeholder="url1,url2,..."></div>
+                    <button class="admin-save-btn" onclick="addAchievement()">+เพิ่ม Achievement</button>
+                </div>
+            </div>
+            <!-- Project Tab -->
+            <div class="admin-pane" id="admin-tab-project">
+                <div class="admin-section">
+                    <h3>เพิ่ม Project</h3>
+                    <div class="admin-grid-2">
+                        <div class="admin-field"><label>ชื่อโปรเจกต์</label><input id="np-title" placeholder="ชื่อโปรเจกต์"></div>
+                        <div class="admin-field"><label>URL รูป</label><input id="np-img" placeholder="https://..."></div>
+                    </div>
+                    <div class="admin-field"><label>รายละเอียดคร่าว ๆ</label><input id="np-short" placeholder="สั้น ๆ 1-2 ประโยค"></div>
+                    <div class="admin-field"><label>รายละเอียดเต็ม</label><textarea id="np-desc" rows="4"></textarea></div>
+                    <div class="admin-field"><label>Tech Tags (คั่นด้วย, )</label><input id="np-tags" placeholder="HTML, CSS, JavaScript, ..."></div>
+                    <button class="admin-save-btn" onclick="addProject()">+เพิ่ม Project</button>
+                </div>
+            </div>
+            <!-- Activity Tab -->
+            <div class="admin-pane" id="admin-tab-activity">
+                <div class="admin-section">
+                    <h3>เพิ่ม Activity</h3>
+                    <div class="admin-grid-2">
+                        <div class="admin-field"><label>ชื่อกิจกรรม</label><input id="nact-title" placeholder="ชื่อกิจกรรม"></div>
+                        <div class="admin-field"><label>วันที่</label><input id="nact-date" placeholder="เช่น มีนาคม 2567"></div>
+                    </div>
+                    <div class="admin-field"><label>รายละเอียด</label><textarea id="nact-desc" rows="3"></textarea></div>
+                    <button class="admin-save-btn" onclick="addActivity()">+เพิ่ม Activity</button>
+                </div>
+            </div>
+            <!-- Contact Tab -->
+            <div class="admin-pane" id="admin-tab-contact">
+                <div class="admin-section">
+                    <h3>ช่องทางติดต่อ</h3>
+                    <div id="contact-list" class="admin-item-list"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:10px;">
+                        <div class="admin-field" style="margin:0"><input id="nc-platform" placeholder="แพลตฟอร์ม"></div>
+                        <div class="admin-field" style="margin:0"><input id="nc-handle" placeholder="@username"></div>
+                        <div class="admin-field" style="margin:0"><input id="nc-link" placeholder="URL"></div>
+                        <button class="admin-add-btn" onclick="addContact()">+เพิ่ม</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end admin-panel -->
+    </div>
+    <!-- end modal-overlay -->
+    <!-- Admin floating badge -->
+    <div class="admin-bar" id="admin-badge" onclick="openAdminModal()"><span>⚙️</span>Admin Mode </div>
+    <!-- ═══════════════════════════ PAGES ═══════════════════════════ -->
+    <!-- PROFILE PAGE -->
+    <div class="page active" id="page-profile">
+        <!-- Hero -->
+        <section class="hero-section">
+            <div class="hero-greeting" id="hero-greeting-text">ยินดีต้อนรับสู่ Portfolio ของ</div>
+            <h1 class="hero-name">วิชญ์พล ผลสุทธิ์</h1>
+            <div class="hero-nickname">เช · ISTJ · Computer Science</div>
+            <blockquote class="hero-quote" id="hero-quote-text">"เทคโนโลยีไม่ใช่แค่เครื่องมือ แต่คือสะพานเชื่อมต่อโลกให้ดีขึ้น"</blockquote>
+            <div class="hero-dream" id="hero-dream-text"><span>🎯</span><span>มุ่งสู่การพัฒนาเทคโนโลยีที่เป็นประโยชน์ต่อผู้คน</span></div>
+            <div class="scroll-hint">
+                <div class="scroll-arrow"></div><span>SCROLL</span>
+            </div>
+        </section>
+        <div class="glow-line"></div>
+        <!-- Profile Main Detail -->
+        <div class="profile-section">
+            <div class="section-label">About Me</div>
+            <h2 class="section-title reveal">ข้อมูลส่วนตัว</h2>
+            <div id="profile-main-detail" class="reveal">
+                <div class="profile-photo-box" id="profile-photo-wrap">
+                    <img id="profile-photo-img" src="" alt="Profile">
+                    <div class="profile-photo-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <p>รูปโปรไฟล์</p>
+                    </div>
+                </div>
+                <div class="profile-info-box">
+                    <div class="profile-info-item">
+                        <div class="profile-info-key">ชื่อ-สกุล</div>
+                        <div class="profile-info-val">นายวิชญ์พล ผลสุทธิ์</div>
+                    </div>
+                    <div class="profile-info-item">
+                        <div class="profile-info-key">ชื่อเล่น</div>
+                        <div class="profile-info-val">เช</div>
+                    </div>
+                    <div class="profile-info-item">
+                        <div class="profile-info-key">MBTI</div>
+                        <div class="profile-info-val"><span class="mbti-badge">ISTJ</span></div>
+                    </div>
+                    <div class="profile-info-item">
+                        <div class="profile-info-key">สาขา</div>
+                        <div class="profile-info-val">Computer Science <span style="color:var(--white-dim);font-size:0.82rem;">(กำลังศึกษา)</span></div>
+                    </div>
+                    <!-- placeholder for more -->
+                    <div class="profile-info-item" id="profile-extra-info" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+        <!-- Education -->
+        <div class="profile-section">
+            <div class="section-label reveal-left">Education</div>
+            <h2 class="section-title reveal">ประวัติการศึกษา</h2>
+            <div class="edu-timeline reveal">
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-school">อนุบาล</div>
+                    <div class="edu-plan">โรงเรียนสนามชัยสิทนุสร</div>
+                    <div class="edu-year">xxxx – xxxx</div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-school">ประถมศึกษาปีที่ 1–2</div>
+                    <div class="edu-plan">โรงเรียนอนุบาลวัดอ่างทอง · English Program</div>
+                    <div class="edu-year">xxxx – xxxx</div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-school">ประถมศึกษาปีที่ 3–6</div>
+                    <div class="edu-plan">โรงเรียนอนุบาลวัดอ่างทอง · The Gifted Program</div>
+                    <div class="edu-year">xxxx – xxxx</div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-school">มัธยมศึกษาตอนต้น</div>
+                    <div class="edu-plan">โรงเรียนอ่างทองปัทมโรจน์วิทยาคม · The Genius Program (ห้องเรียนพิเศษ)</div>
+                    <div class="edu-year">xxxx – xxxx</div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot"></div>
+                    <div class="edu-school">มัธยมศึกษาตอนปลาย</div>
+                    <div class="edu-plan">โรงเรียนอ่างทองปัทมโรจน์วิทยาคม · The Genius Program (ห้องเรียนพิเศษ)</div>
+                    <div class="edu-year">xxxx – xxxx</div>
+                    <div class="edu-gpax">⭐ GPAX 5 ภาค: 3.81</div>
+                </div>
+                <div class="edu-item">
+                    <div class="edu-dot" style="background:var(--cyan);box-shadow:0 0 8px var(--cyan);"></div>
+                    <div class="edu-school">มหาวิทยาลัย</div>
+                    <div class="edu-plan" style="color:var(--white-dim);">(เว้นว่างไว้ — อยู่ระหว่างศึกษา)</div>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+        <!-- Creators -->
+        <div class="profile-section">
+            <div class="section-label reveal-left">Inspired By</div>
+            <h2 class="section-title reveal">Creators ที่ชอบ</h2>
+            <div class="creators-row reveal" id="creators-row">
+                <!-- filled by JS -->
+            </div>
+        </div>
+        <div class="section-divider"></div>
+        <!-- Skills & Interests -->
+        <div class="profile-section">
+            <div class="section-label reveal-left">Skills & Interests</div>
+            <h2 class="section-title reveal">ทักษะและความสนใจ</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;" class="reveal">
+                <div>
+                    <p style="font-size:0.82rem;color:var(--cyan);letter-spacing:0.1em;margin-bottom:12px;">— SKILLS</p>
+                    <div class="skills-grid" id="skills-grid">
+                        <!-- filled by JS -->
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:0.82rem;color:var(--cyan);letter-spacing:0.1em;margin-bottom:12px;">— INTERESTS</p>
+                    <div class="interests-grid" id="interests-grid">
+                        <div class="interest-card"><span class="ic-emoji">🎮</span>Game Dev</div>
+                        <div class="interest-card"><span class="ic-emoji">🌐</span>Web Dev</div>
+                        <div class="interest-card"><span class="ic-emoji">🤖</span>AI/ML</div>
+                        <div class="interest-card"><span class="ic-emoji">🎨</span>Design</div>
+                        <div class="interest-card"><span class="ic-emoji">📚</span>Education</div>
+                        <div class="interest-card"><span class="ic-emoji">🔬</span>Science</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div class="footer-brand">วิชญ์พล ผลสุทธิ์ — Portfolio</div>
+            <div class="footer-links">
+                <span class="footer-link" onclick="showPage('profile')">Profile</span>
+                <span class="footer-link" onclick="showPage('achievement')">Achievement</span>
+                <span class="footer-link" onclick="showPage('project')">Project</span>
+                <span class="footer-link" onclick="showPage('contact')">Contact</span>
+            </div>
+            <div class="footer-copy">© 2024 Witchapol Phonlasut. Crafted with ❤️</div>
+        </footer>
+    </div>
+    <!-- ACHIEVEMENT PAGE -->
+    <div class="page" id="page-achievement">
+        <div class="ach-layout">
+            <aside class="cat-sidebar" id="cat-sidebar">
+                <div class="cat-item active" onclick="filterCat('all')" data-cat="all">
+                    <div class="cat-name">ทั้งหมด</div>
+                    <div class="cat-count" id="cnt-all">0 รายการ</div>
+                </div>
+                <div class="cat-item" onclick="filterCat('Competition')" data-cat="Competition">
+                    <div class="cat-name">Competition</div>
+                    <div class="cat-count" id="cnt-Competition">0 รายการ</div>
+                </div>
+                <div class="cat-item" onclick="filterCat('Award')" data-cat="Award">
+                    <div class="cat-name">Award</div>
+                    <div class="cat-count" id="cnt-Award">0 รายการ</div>
+                </div>
+                <div class="cat-add-btn" id="cat-add-btn" onclick="openAdminModal()"><span>+</span>เพิ่ม Category </div>
+            </aside>
+            <div class="ach-content">
+                <div class="ach-summary" id="ach-summary">
+                    <div class="ach-stat reveal-scale">
+                        <div class="ach-stat-num" id="stat-total">0</div>
+                        <div class="ach-stat-label">ผลงานทั้งหมด</div>
+                    </div>
+                    <div class="ach-stat reveal-scale d1">
+                        <div class="ach-stat-num" id="stat-comp">0</div>
+                        <div class="ach-stat-label">Competition</div>
+                    </div>
+                    <div class="ach-stat reveal-scale d2">
+                        <div class="ach-stat-num" id="stat-award">0</div>
+                        <div class="ach-stat-label">Award</div>
+                    </div>
+                </div>
+                <div class="ach-grid" id="ach-grid">
+                    <div class="empty-state" id="ach-empty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                        <p>ยังไม่มีผลงาน — Admin สามารถเพิ่มได้ ⚙️</p>
+                    </div>
+                </div>
+                <button class="ach-add-btn" id="ach-add-btn" onclick="openAdminModal()">+เพิ่ม Achievement</button>
+            </div>
+        </div>
+        <footer style="margin-top:0;">
+            <div class="footer-brand">วิชญ์พล ผลสุทธิ์ — Portfolio</div>
+            <div class="footer-copy">© 2024 Witchapol Phonlasut</div>
+        </footer>
+    </div>
+    <!-- PROJECT PAGE -->
+    <div class="page" id="page-project">
+        <div class="project-content">
+            <div class="section-label reveal-left">My Work</div>
+            <h2 class="section-title reveal">Projects</h2>
+            <div class="project-grid" id="project-grid">
+                <div class="empty-state" id="proj-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                        <path d="M8 3v4M16 3v4" />
+                    </svg>
+                    <p>ยังไม่มีโปรเจกต์ — Admin สามารถเพิ่มได้ ⚙️</p>
+                </div>
+            </div>
+            <button class="ach-add-btn admin-visible" id="proj-add-btn" style="margin-top:20px;display:none;" onclick="openAdminModal()">+เพิ่ม Project</button>
+        </div>
+        <footer>
+            <div class="footer-brand">วิชญ์พล ผลสุทธิ์ — Portfolio</div>
+            <div class="footer-copy">© 2024 Witchapol Phonlasut</div>
+        </footer>
+    </div>
+    <!-- ACTIVITY PAGE -->
+    <div class="page" id="page-activity">
+        <div class="activity-content">
+            <div class="section-label reveal-left">Timeline</div>
+            <h2 class="section-title reveal">กิจกรรม</h2>
+            <div class="activity-timeline" id="activity-timeline">
+                <div class="empty-state" id="act-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                    <p>ยังไม่มีกิจกรรม — Admin สามารถเพิ่มได้ ⚙️</p>
+                </div>
+            </div>
+            <button class="ach-add-btn" id="act-add-btn" style="margin-top:16px;display:none;" onclick="openAdminModal()">+เพิ่ม Activity</button>
+        </div>
+        <footer>
+            <div class="footer-brand">วิชญ์พล ผลสุทธิ์ — Portfolio</div>
+            <div class="footer-copy">© 2024 Witchapol Phonlasut</div>
+        </footer>
+    </div>
+    <!-- CONTACT PAGE -->
+    <div class="page" id="page-contact">
+        <div class="contact-content">
+            <div>
+                <div class="contact-info-title reveal-left">ติดต่อผม</div>
+                <p class="reveal" style="color:var(--white-dim);font-size:0.9rem;margin-bottom:28px;line-height:1.8;">สนใจร่วมงาน มีข้อสงสัย หรืออยากพูดคุย ยินดีเสมอ ! </p>
+                <div class="contact-links reveal" id="contact-links">
+                    <div class="empty-state" id="contact-empty">
+                        <p>— Admin เพิ่มช่องทางติดต่อได้ผ่าน ⚙️ —</p>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal-right">
+                <p style="font-size:0.82rem;color:var(--cyan);margin-bottom:16px;letter-spacing:0.1em;">— ส่งข้อความ</p>
+                <div class="contact-form">
+                    <input type="text" placeholder="ชื่อของคุณ">
+                    <input type="email" placeholder="อีเมล">
+                    <textarea placeholder="ข้อความ..."></textarea>
+                    <button class="contact-submit" onclick="handleContactSend()">ส่งข้อความ 🚀</button>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div class="footer-brand">วิชญ์พล ผลสุทธิ์ — Portfolio</div>
+            <div class="footer-copy">© 2024 Witchapol Phonlasut</div>
+        </footer>
+    </div>
+    <!-- Detail Popup Overlay -->
+    <div class="modal-overlay" id="detail-overlay" onclick="closeDetailOverlay(event)">
+        <div class="detail-popup" id="detail-popup">
+            <div class="detail-popup-header" id="dp-header">
+                <img id="dp-img" src="" alt="">
+                <div id="dp-emoji">🏆</div>
+            </div>
+            <div class="detail-popup-close" onclick="closeDetail()">✕</div>
+            <div class="detail-popup-body">
+                <h2 class="detail-popup-title" id="dp-title"></h2>
+                <div class="detail-popup-meta" id="dp-meta"></div>
+                <p class="detail-popup-desc" id="dp-desc"></p>
+                <div class="detail-popup-imgs" id="dp-imgs2"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
