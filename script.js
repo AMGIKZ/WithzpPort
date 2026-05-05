@@ -193,7 +193,7 @@ function renderAchievements() {
 
     grid.innerHTML = state.achievements.map((a, i) => `
         <div class="ach-card reveal" onclick="showDetail('ach', ${i})">
-            <div class="ach-card-img">
+            <div class="ach-card-img ${!a.img ? 'no-img' : ''}">
                 ${a.img ? `<img src="${a.img}" style="display:block">` : `<div class="ach-card-img-placeholder">🏆</div>`}
                 <div class="ach-card-badge badge-${a.award}">${a.award.toUpperCase()}</div>
             </div>
@@ -214,8 +214,13 @@ function renderProjects() {
     }
     grid.innerHTML = state.projects.map((p, i) => `
         <div class="project-card reveal" onclick="showDetail('proj', ${i})">
-            <div class="project-card-img">
-                ${p.img ? `<img src="${p.img}" style="display:block">` : '💻'}
+            <div class="project-card-img ${!p.img ? 'no-img' : ''}">
+                ${p.img ? `<img src="${p.img}" style="display:block">` : `
+                    <div class="project-placeholder-content">
+                        <div class="p-icon">💻</div>
+                        <div class="p-title-short">${p.title}</div>
+                    </div>
+                `}
             </div>
             <div class="project-card-body">
                 <div class="project-card-title">${p.title}</div>
@@ -270,7 +275,7 @@ function loadAdminData() {
     
     // Creators list
     const clist = document.getElementById('creator-list');
-    clist.innerHTML = state.creators.map((c, i) => `
+    if (clist) clist.innerHTML = state.creators.map((c, i) => `
         <div class="admin-item">
             <span>${c.name}</span>
             <button class="admin-item-del" onclick="deleteItem('creators', ${i})">ลบ</button>
@@ -279,16 +284,52 @@ function loadAdminData() {
 
     // Skills list
     const slist = document.getElementById('skill-list');
-    slist.innerHTML = state.skills.map((s, i) => `
+    if (slist) slist.innerHTML = state.skills.map((s, i) => `
         <div class="admin-item">
             <span>${s}</span>
             <button class="admin-item-del" onclick="deleteItem('skills', ${i})">ลบ</button>
         </div>
     `).join('');
 
+    // Categories list
+    const catList = document.getElementById('cat-list');
+    if (catList) catList.innerHTML = state.categories.map((c, i) => `
+        <div class="admin-item">
+            <span>${c}</span>
+            <button class="admin-item-del" onclick="deleteItem('categories', ${i})">ลบ</button>
+        </div>
+    `).join('');
+
+    // Achievements list
+    const achList = document.getElementById('ach-list');
+    if (achList) achList.innerHTML = state.achievements.map((a, i) => `
+        <div class="admin-item">
+            <span>${a.title}</span>
+            <button class="admin-item-del" onclick="deleteItem('achievements', ${i})">ลบ</button>
+        </div>
+    `).join('');
+
+    // Projects list
+    const projList = document.getElementById('proj-list');
+    if (projList) projList.innerHTML = state.projects.map((p, i) => `
+        <div class="admin-item">
+            <span>${p.title}</span>
+            <button class="admin-item-del" onclick="deleteItem('projects', ${i})">ลบ</button>
+        </div>
+    `).join('');
+
+    // Activities list
+    const actList = document.getElementById('act-list');
+    if (actList) actList.innerHTML = state.activities.map((a, i) => `
+        <div class="admin-item">
+            <span>${a.title}</span>
+            <button class="admin-item-del" onclick="deleteItem('activities', ${i})">ลบ</button>
+        </div>
+    `).join('');
+
     // Category select in Achievement tab
     const catSelect = document.getElementById('na-cat');
-    catSelect.innerHTML = state.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+    if (catSelect) catSelect.innerHTML = state.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
 
 function saveProfile() {
